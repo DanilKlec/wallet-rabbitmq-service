@@ -1,0 +1,47 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: wallet-postgres
+    environment:
+      POSTGRES_DB: wallet
+      POSTGRES_USER: wallet
+      POSTGRES_PASSWORD: wallet
+    ports:
+      - '5433:5432'
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+
+  backend:
+    build: .
+    ports:
+      - '3000:3000'
+      - '50051:50051'
+    environment:
+      DB_HOST: postgres
+      DB_NAME: wallet
+      DB_USER: wallet
+      DB_PASSWORD: wallet
+      REDIS_HOST: redis
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      JWT_SECRET: wallet-docker-secret
+      SEED_DEMO: 'true'
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+
+  frontend:
+    build: ./frontend
+    ports:
+      - '5173:80'
+    depends_on:
+      - backend

@@ -1,0 +1,109 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Wallet Service API",
+    "version": "1.0.0",
+    "description": "Wallet service with JWT auth, transactions, Redis cache, RabbitMQ and gRPC"
+  },
+  "servers": [{ "url": "http://localhost:3000" }],
+  "paths": {
+    "/health": {
+      "get": { "summary": "Health check", "tags": ["System"] }
+    },
+    "/auth/register": {
+      "post": {
+        "summary": "Register user",
+        "tags": ["Auth"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": { "email": "user@example.com", "password": "password123" }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Login",
+        "tags": ["Auth"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": { "email": "alice@example.com", "password": "password123" }
+            }
+          }
+        }
+      }
+    },
+    "/auth/profile": {
+      "get": {
+        "summary": "Get profile (cached in Redis)",
+        "tags": ["Auth"],
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/wallet": {
+      "get": {
+        "summary": "Get wallet balance",
+        "tags": ["Wallet"],
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/transactions": {
+      "get": {
+        "summary": "Transaction history",
+        "tags": ["Transactions"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer" } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer" } },
+          { "name": "type", "in": "query", "schema": { "type": "string" } },
+          { "name": "sort", "in": "query", "schema": { "type": "string", "enum": ["asc", "desc"] } }
+        ]
+      }
+    },
+    "/transactions/deposit": {
+      "post": {
+        "summary": "Deposit funds",
+        "tags": ["Transactions"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": { "example": { "amount": "100.00", "description": "Top-up" } }
+          }
+        }
+      }
+    },
+    "/transactions/withdraw": {
+      "post": {
+        "summary": "Withdraw funds",
+        "tags": ["Transactions"],
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/transactions/transfer": {
+      "post": {
+        "summary": "Transfer to another user",
+        "tags": ["Transactions"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "toUserId": "uuid",
+                "amount": "50.00",
+                "description": "Payment"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT" }
+    }
+  }
+}

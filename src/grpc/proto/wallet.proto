@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package wallet;
+
+service WalletInfoService {
+  rpc GetBalance (GetBalanceRequest) returns (GetBalanceResponse);
+  rpc GetWalletByUserId (GetWalletByUserIdRequest) returns (GetWalletByUserIdResponse);
+}
+
+message GetBalanceRequest {
+  string user_id = 1;
+}
+
+message GetBalanceResponse {
+  string balance = 1;
+}
+
+message GetWalletByUserIdRequest {
+  string user_id = 1;
+}
+
+message GetWalletByUserIdResponse {
+  string wallet_id = 1;
+  string balance = 2;
+}
