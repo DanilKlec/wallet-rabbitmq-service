@@ -18,6 +18,7 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
 const walletProto = grpc.loadPackageDefinition(packageDefinition).wallet;
 
 async function getBalance(call, callback) {
+  console.dir(call.request, { depth: null });
   try {
     const { user_id: userId } = call.request;
     const balance = await walletService.getBalanceByUserId(userId);
